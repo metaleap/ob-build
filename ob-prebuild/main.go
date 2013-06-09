@@ -2,28 +2,41 @@ package main
 
 import (
 	"flag"
+	"path/filepath"
+	"runtime"
+	"sync"
 
 	ugo "github.com/metaleap/go-util"
 	uio "github.com/metaleap/go-util/io"
-	ustr "github.com/metaleap/go-util/str"
 )
 
-func copyHive(dst string) {
-	var skipDirs ustr.Matcher
-	skipDirs.AddPatterns("cust")
+var wait sync.WaitGroup
 
-	src := ugo.GopathSrcGithub("openbase", "ob-build", "default-hive")
-
-	if len(dst) > 0 {
-		uio.CopyAll(src, dst, &skipDirs)
+func copyHive(dst string, cust bool) {
+	defer wait.Done()
+	subDirs := []string{"dist"}
+	if cust {
+		subDirs = append(subDirs, "cust")
 	}
-
-	dst = ugo.GopathSrcGithub("openbase", "ob-gae", "demo-app", "hive")
-	uio.CopyAll(src, dst, &skipDirs)
+	src := ugo.GopathSrcGithub("openbase", "ob-build", "default-hive")
+	for _, subDir := range subDirs {
+		if err := uio.ClearDirectory(filepath.Join(dst, subDir)); err != nil {
+			panic(err)
+		}
+		if err := uio.CopyAll(filepath.Join(src, subDir), filepath.Join(dst, subDir), nil); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	wait.Add(1)
+	go copyHive(ugo.GopathSrcGithub("openbase", "ob-gae", "demo-app", "hive"), true)
 	dst := flag.String("hive_dst", "", "Destination hive dir path to copy default-hive to")
-	flag.Parse()
-	copyHive(*dst)
+	if flag.Parse(); len(*dst) > 0 {
+		wait.Add(1)
+		go copyHive(*dst, false)
+	}
+	wait.Wait()
 }
