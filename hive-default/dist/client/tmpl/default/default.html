@@ -3,35 +3,40 @@
   <head>
     <title>OpenBase</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="/magpop/magpop.css" rel="stylesheet">
+    <link href="/_static/lib/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/_static/lib/bootstrap/2.3.2/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/_static/css/ob.css" rel="stylesheet">
+    <link href="/_static/lib/magpop/0.8.9/magpop.min.css" rel="stylesheet">
   </head>
-  <body id="ob_body" class="ob-body">
-    <div id="ob_wrap" class="ob-wrap">
+  <body id="ob_body">
+    <div id="ob_body_wrap">
       <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container">
             <a class="brand" href="/">OpenBase</a>
-            <ul class="nav">
-              <li class="active"><a href="/">Home</a></li>
-            </ul>
+            <div class="nav-collapse collapse">
+              <ul class="nav">
+                <li class="active"><a href="/">Home</a></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
       <div class="container">
-        Lorem Ipsum!
+        <h1>Hello World!</h1>
+        <p>
+          Lorem {{.Get "Foo+Bar"}} Ipsum!
+        </p>
       </div>
-      <div id="push"></div>
+      <div id="ob_body_wrap_push"></div>
     </div>
-    <div id="ob_footer" class="ob-footer">
+    <div id="ob_footer">
       <div class="container">
         <p>Footer</p>
       </div>
     </div>
-    <script src="/jquery.js"></script>
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/magpop/magpop.js"></script>
-    <script src="/metaleap.js"></script>
+    <script src="/_static/lib/jquery/2.0.2/jquery.min.js"></script>
+    <script src="/_static/lib/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="/_static/lib/magpop/0.8.9//magpop.min.js"></script>
   </body>
 </html>

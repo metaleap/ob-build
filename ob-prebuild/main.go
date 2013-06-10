@@ -20,7 +20,7 @@ var (
 	hiveDirPath = ugo.GopathSrcGithub("openbase", "ob-build", "hive-default")
 )
 
-func runPreprocessor(isBatch bool, cmd string, args ...string) {
+func compilerRun(isBatch bool, cmd string, args ...string) {
 	var (
 		output []byte
 		err    error
@@ -64,17 +64,19 @@ func compileWebFiles() (err error) {
 		switch filepath.Ext(filePath) {
 		case ".scss":
 			if outFilePath = getOutFilePath(filePath, ".css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t", "expanded", "--cache-location", prepTmpPath, filePath, outFilePath)
+				compilerRun(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t", "expanded", "--cache-location", prepTmpPath, filePath, outFilePath)
 			}
 			if outFilePath = getOutFilePath(filePath, ".min.css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-t", "compressed", "--cache-location", prepTmpPath, filePath, outFilePath)
+				compilerRun(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-t", "compressed", "--cache-location", prepTmpPath, filePath, outFilePath)
 			}
 		}
 	}
 
 	if errs := uio.NewDirWalker(true, nil, func(_ *uio.DirWalker, filePath string, _ os.FileInfo) bool {
-		wait.Add(1)
-		go prepFile(filePath)
+		if !strings.HasPrefix(filePath, prepTmpPath) {
+			wait.Add(1)
+			go prepFile(filePath)
+		}
 		return true
 	}).Walk(prepDirPath); len(errs) > 0 {
 		err = errs[0]
@@ -98,9 +100,20 @@ func copyHive(dst string, cust bool) {
 	}
 }
 
+func resetCust() {
+	distDirPath, custDirPath := filepath.Join(hiveDirPath, "dist"), filepath.Join(hiveDirPath, "cust")
+	//	clear everything in cust
+	uio.ClearDirectory(custDirPath)
+	//	recreate entire dist directory hierarchy in cust, but empty (no files, only directories)
+	uio.NewDirWalker(true, func(_ *uio.DirWalker, dirPath string, _ os.FileInfo) bool {
+		uio.EnsureDirExists(filepath.Join(custDirPath, dirPath[len(distDirPath):]))
+		return true
+	}, nil).Walk(distDirPath)
+}
+
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
+	resetCust()
 	err := compileWebFiles()
 	if err != nil {
 		panic(err)
