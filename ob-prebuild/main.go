@@ -28,7 +28,6 @@ func runPreprocessor(isBatch bool, cmd string, args ...string) {
 	if isBatch && runtime.GOOS == "windows" {
 		args = append([]string{"/C", cmd}, args...)
 		cmd = "cmd"
-		// fmt.Printf("[%s]\t%#v", cmd, args)
 	}
 	if output, err = exec.Command(cmd, args...).CombinedOutput(); err != nil {
 		log.Printf("[%s]\tERROR: %v\n", cmd, err)
@@ -61,10 +60,10 @@ func compileWebFiles() {
 		switch filepath.Ext(filePath) {
 		case ".scss":
 			if outFilePath = getOutFilePath(filePath, ".css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t expanded", filePath, outFilePath)
+				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t", "expanded", filePath, outFilePath)
 			}
 			if outFilePath = getOutFilePath(filePath, ".min.css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-t compressed", filePath, outFilePath)
+				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-t", "compressed", filePath, outFilePath)
 			}
 		}
 	}
