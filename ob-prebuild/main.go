@@ -36,8 +36,12 @@ func runPreprocessor(isBatch bool, cmd string, args ...string) {
 	}
 }
 
-func compileWebFiles() {
+func compileWebFiles() (err error) {
 	prepDirPath := ugo.GopathSrcGithub("openbase", "ob-build", "hive-prep")
+	prepTmpPath := filepath.Join(prepDirPath, "_tmp")
+	if err = uio.EnsureDirExists(prepTmpPath); err != nil {
+		return
+	}
 
 	//	convert hive-prep/path/file.old to hive-default/path/file.new
 	getOutFilePath := func(srcFilePath, newExt string) (outFilePath string) {
@@ -60,19 +64,22 @@ func compileWebFiles() {
 		switch filepath.Ext(filePath) {
 		case ".scss":
 			if outFilePath = getOutFilePath(filePath, ".css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t", "expanded", filePath, outFilePath)
+				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t", "expanded", "--cache-location", prepTmpPath, filePath, outFilePath)
 			}
 			if outFilePath = getOutFilePath(filePath, ".min.css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-t", "compressed", filePath, outFilePath)
+				runPreprocessor(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-t", "compressed", "--cache-location", prepTmpPath, filePath, outFilePath)
 			}
 		}
 	}
 
-	uio.NewDirWalker(true, nil, func(_ *uio.DirWalker, filePath string, _ os.FileInfo) bool {
+	if errs := uio.NewDirWalker(true, nil, func(_ *uio.DirWalker, filePath string, _ os.FileInfo) bool {
 		wait.Add(1)
 		go prepFile(filePath)
 		return true
-	}).Walk(prepDirPath)
+	}).Walk(prepDirPath); len(errs) > 0 {
+		err = errs[0]
+	}
+	return
 }
 
 func copyHive(dst string, cust bool) {
@@ -94,7 +101,10 @@ func copyHive(dst string, cust bool) {
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	compileWebFiles()
+	err := compileWebFiles()
+	if err != nil {
+		panic(err)
+	}
 	wait.Wait()
 
 	//	copy to GAE demo-app/hive
