@@ -1,0 +1,11 @@
+[default]
+title = "Bootstrap 2"
+desc = "Sleek, intuitive, and powerful front-end framework."
+www = "http://getbootstrap.com"
+requires = ["webuilib-jquery"]
+js = ["bootstrap"]
+css = ["bootstrap"]
+
+[responsive]
+title = "Responsive CSS"
+css = ["bootstrap", "bootstrap-responsive"]

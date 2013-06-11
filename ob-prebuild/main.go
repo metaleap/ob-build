@@ -20,15 +20,11 @@ var (
 	hiveDirPath = ugo.GopathSrcGithub("openbase", "ob-build", "hive-default")
 )
 
-func compilerRun(isBatch bool, cmd string, args ...string) {
+func compilerRun(cmd string, args ...string) {
 	var (
 		output []byte
 		err    error
 	)
-	if isBatch && runtime.GOOS == "windows" {
-		args = append([]string{"/C", cmd}, args...)
-		cmd = "cmd"
-	}
 	if output, err = exec.Command(cmd, args...).CombinedOutput(); err != nil {
 		log.Printf("[%s]\tERROR: %v\n", cmd, err)
 	} else if len(output) > 0 {
@@ -44,6 +40,7 @@ func compileWebFiles() (err error) {
 	}
 
 	//	convert hive-prep/path/file.old to hive-default/path/file.new
+	//	return "" if base-name of path starts with "_" to skip processing such files
 	getOutFilePath := func(srcFilePath, newExt string) (outFilePath string) {
 		if srcDir, srcExt, srcBase := filepath.Dir(srcFilePath), filepath.Ext(srcFilePath), filepath.Base(srcFilePath); !strings.HasPrefix(srcBase, "_") {
 			outFilePath = filepath.Join(hiveDirPath, srcDir[len(prepDirPath):], srcBase[:len(srcBase)-len(srcExt)]+newExt)
@@ -52,8 +49,11 @@ func compileWebFiles() (err error) {
 	}
 
 	//	is file.src newer than file.dst?
-	isNewer := func(srcFilePath, outFilePath string) (newer bool) {
-		newer, _ = uio.IsNewerThan(srcFilePath, outFilePath)
+	//	outFilePath may be "" as per getOutFilePath(), then returns false to skip processing
+	shouldPrep := func(srcFilePath, outFilePath string) (newer bool) {
+		if len(outFilePath) > 0 {
+			newer, _ = uio.IsNewerThan(srcFilePath, outFilePath)
+		}
 		return
 	}
 
@@ -63,11 +63,11 @@ func compileWebFiles() (err error) {
 		var outFilePath string
 		switch filepath.Ext(filePath) {
 		case ".scss":
-			if outFilePath = getOutFilePath(filePath, ".css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				compilerRun(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t", "expanded", "--cache-location", prepTmpPath, filePath, outFilePath)
+			if outFilePath = getOutFilePath(filePath, ".css"); shouldPrep(filePath, outFilePath) {
+				compilerRun("sass", "--trace", "--scss", "--stop-on-error", "-f", "-g", "-l", "-t", "expanded", "--cache-location", prepTmpPath, filePath, outFilePath)
 			}
-			if outFilePath = getOutFilePath(filePath, ".min.css"); len(outFilePath) > 0 && isNewer(filePath, outFilePath) {
-				compilerRun(true, "sass", "--trace", "--scss", "--stop-on-error", "-f", "-t", "compressed", "--cache-location", prepTmpPath, filePath, outFilePath)
+			if outFilePath = getOutFilePath(filePath, ".min.css"); shouldPrep(filePath, outFilePath) {
+				compilerRun("sass", "--trace", "--scss", "--stop-on-error", "-f", "-t", "compressed", "--cache-location", prepTmpPath, filePath, outFilePath)
 			}
 		}
 	}

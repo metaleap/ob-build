@@ -1,0 +1,7 @@
+[default]
+title = "Magnific Popup"
+desc = "Magnific Popup is a free responsive jQuery lightbox plugin that is focused on performance and providing best experience for user with any device."
+www = "http://dimsemenov.com/plugins/magnific-popup/"
+requires = ["webuilib-jquery"]
+js = ["magpop"]
+css = ["magpop"]

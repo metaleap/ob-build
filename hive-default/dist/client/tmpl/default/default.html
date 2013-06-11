@@ -3,10 +3,11 @@
   <head>
     <title>OpenBase</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/_static/lib/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/_static/lib/bootstrap/2.3.2/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="/_static/css/ob.css" rel="stylesheet">
-    <link href="/_static/lib/magpop/0.8.9/magpop.min.css" rel="stylesheet">
+    {{ range $lib := .WebUI.Libs }}
+      {{ range $cssUrl := $lib.CssUrls }}
+        <link href="{{ $cssUrl }}" rel="stylesheet">
+      {{ end }}
+    {{ end }}
   </head>
   <body id="ob_body">
     <div id="ob_body_wrap">
@@ -35,8 +36,10 @@
         <p>Footer</p>
       </div>
     </div>
-    <script src="/_static/lib/jquery/2.0.2/jquery.min.js"></script>
-    <script src="/_static/lib/bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <script src="/_static/lib/magpop/0.8.9//magpop.min.js"></script>
+    {{ range $lib := .WebUI.Libs }}
+      {{ range $jsUrl := $lib.JsUrls }}
+        <script src="{{ $jsUrl }}"></script>
+      {{ end }}
+    {{ end }}
   </body>
 </html>
