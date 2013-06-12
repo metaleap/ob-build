@@ -3,9 +3,9 @@
   <head>
     <title>OpenBase</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {{ range $lib := .WebUI.Libs }}
-      {{ range $cssUrl := $lib.CssUrls }}
-        <link href="{{ $cssUrl }}" rel="stylesheet">
+    {{ range $lib := .WebUi.Libs }}
+      {{ range $css := $lib.Css }}
+        <link href="{{ $lib.Url $css "css" }}" rel="stylesheet">
       {{ end }}
     {{ end }}
   </head>
@@ -36,9 +36,9 @@
         <p>Footer</p>
       </div>
     </div>
-    {{ range $lib := .WebUI.Libs }}
-      {{ range $jsUrl := $lib.JsUrls }}
-        <script src="{{ $jsUrl }}"></script>
+    {{ range $lib := .WebUi.Libs }}
+      {{ range $js := $lib.Js }}
+        <script src="{{ $lib.Url $js "js" }}"></script>
       {{ end }}
     {{ end }}
   </body>
