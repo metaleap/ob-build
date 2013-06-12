@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -72,13 +71,13 @@ func compileWebFiles() (err error) {
 		}
 	}
 
-	if errs := uio.NewDirWalker(true, nil, func(_ *uio.DirWalker, filePath string, _ os.FileInfo) bool {
+	if errs := uio.WalkAllFiles(prepDirPath, func(filePath string) bool {
 		if !strings.HasPrefix(filePath, prepTmpPath) {
 			wait.Add(1)
 			go prepFile(filePath)
 		}
 		return true
-	}).Walk(prepDirPath); len(errs) > 0 {
+	}); len(errs) > 0 {
 		err = errs[0]
 	}
 	return
@@ -105,10 +104,10 @@ func resetCust() {
 	//	clear everything in cust
 	uio.ClearDirectory(custDirPath)
 	//	recreate entire dist directory hierarchy in cust, but empty (no files, only directories)
-	uio.NewDirWalker(true, func(_ *uio.DirWalker, dirPath string, _ os.FileInfo) bool {
+	uio.WalkAllDirs(distDirPath, func(dirPath string) bool {
 		uio.EnsureDirExists(filepath.Join(custDirPath, dirPath[len(distDirPath):]))
 		return true
-	}, nil).Walk(distDirPath)
+	})
 }
 
 func main() {

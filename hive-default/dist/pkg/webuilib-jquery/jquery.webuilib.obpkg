@@ -1,7 +1,9 @@
-[default]
+[pkg]
 title = "jQuery"
 desc = "jQuery is a fast, small, and feature-rich JavaScript library. It makes things like HTML document traversal and manipulation, event handling, animation, and Ajax much simpler with an easy-to-use API that works across a multitude of browsers."
 www = "http://jquery.com"
+
+[default]
 js = ["jquery"]
 
 [legacy]
@@ -10,4 +12,4 @@ desc = "Serves 1.x (instead of newer versions) to MSIE versions older than 9.0"
 version_lt = 2
 
 [legacy.auto]
-header_regexp = [["User-Agent", "^Mozilla/\d+\.\d+ \([^(]*MSIE [2-8]\.[0-9][^)]*\).*"]]
+header_regexp = ["User-Agent", "^Mozilla/\\d+\\.\\d+ \\([^(]*MSIE [1-8]\\.[0-9][^)]*\\).*"]
