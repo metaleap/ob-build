@@ -1,0 +1,16 @@
+[pkg]
+title = "Normalize.css"
+desc = "A modern, HTML5-ready alternative to CSS resets"
+www = "http://necolas.github.io/normalize.css/"
+# skip_if = ["webuilib-bootstrap2"]
+
+[default]
+css = ["normalize"]
+
+[legacy]
+title = "Legacy"
+desc = "Serves 1.x (instead of newer versions) to MSIE versions older than 8.0"
+version_lt = 2
+
+[legacy.auto]
+header_regexp = ["User-Agent", "^Mozilla/\\d+\\.\\d+ \\([^(]*MSIE [1-7]\\.[0-9][^)]*\\).*"]
