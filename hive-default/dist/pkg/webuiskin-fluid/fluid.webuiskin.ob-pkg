@@ -1,4 +1,4 @@
-[pkg]
+[bundle]
 title = "Fluid Layout (Bootstrap 2)"
 desc = "Default skin"
 require = ["webuilib-bootstrap2"]

@@ -1,4 +1,4 @@
-[pkg]
+[bundle]
 title = "Normalize.css"
 desc = "A modern, HTML5-ready alternative to CSS resets"
 www = "http://necolas.github.io/normalize.css/"

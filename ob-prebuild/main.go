@@ -83,15 +83,15 @@ func compileWebFiles() (err error) {
 	return
 }
 
-func copyHive(dst string, cust bool) {
+func copyHive(dst string) {
 	defer wait.Done()
-	subDirs := []string{"dist"}
-	if cust {
-		subDirs = append(subDirs, "cust")
-	}
+	subDirs := []string{"dist", "cust"}
 	for _, subDir := range subDirs {
-		if err := uio.ClearDirectory(filepath.Join(dst, subDir)); err != nil {
-			panic(err)
+		uio.EnsureDirExists(filepath.Join(dst, subDir))
+		if subDir == "dist" {
+			if err := uio.ClearDirectory(filepath.Join(dst, subDir)); err != nil {
+				panic(err)
+			}
 		}
 		if err := uio.CopyAll(filepath.Join(hiveDirPath, subDir), filepath.Join(dst, subDir), nil); err != nil {
 			panic(err)
@@ -121,14 +121,13 @@ func main() {
 
 	//	copy to GAE demo-app/hive
 	wait.Add(1)
-	go copyHive(ugo.GopathSrcGithub("openbase", "ob-gae", "demo-app", "hive"), true)
+	go copyHive(ugo.GopathSrcGithub("openbase", "ob-gae", "demo-app", "hive"))
 
 	//	copy to other user-specified hive directory such as "/user/foo/my-ob-dev/test2"
 	dst := flag.String("hive_dst", "", fmt.Sprintf("Destination hive dir path to copy %s to", hiveDirPath))
-	cust := flag.Bool("hive_cust", true, fmt.Sprintf("Set to true to copy %s/cust to {hive_dst}/cust", hiveDirPath))
 	if flag.Parse(); len(*dst) > 0 {
 		wait.Add(1)
-		go copyHive(*dst, *cust)
+		go copyHive(*dst)
 	}
 
 	wait.Wait()

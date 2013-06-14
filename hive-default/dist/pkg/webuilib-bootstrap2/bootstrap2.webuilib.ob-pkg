@@ -1,4 +1,4 @@
-[pkg]
+[bundle]
 title = "Bootstrap 2"
 desc = "Sleek, intuitive, and powerful front-end framework."
 www = "http://getbootstrap.com"
