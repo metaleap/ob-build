@@ -6,7 +6,7 @@ require = ["webuilib-jquery"]
 
 [default]
 js = ["bootstrap"]
-css = ["bootstrap"]
+css = ["bootstrap", "bootstrap-responsive"] # remove responsive later
 
 [responsive]
 title = "Responsive CSS"

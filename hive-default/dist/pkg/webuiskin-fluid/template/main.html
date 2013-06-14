@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Fluid Layout</title>
+    <meta charset="utf-8">
+    <title>Fluid Bootstrap2 Layout</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hub description">
+    <meta name="author" content="Page author">
+
     {{ range $lib := .WebUi.Libs }}
       {{ range $css := $lib.Css }}
         <link href="{{ $lib.Url $css "css" }}" rel="stylesheet">
@@ -10,39 +14,114 @@
     {{ end }}
     <link href="/_static/css/ob.css" rel="stylesheet">
   </head>
+
   <body id="ob_body">
     <div id="ob_body_wrap">
       <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
-          <div class="container">
-            <a class="brand" href="/">OpenBase</a>
+          <div class="container-fluid">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="#">OpenBase</a>
             <div class="nav-collapse collapse">
+              <p class="navbar-text pull-right">
+                Logged in as <a href="#" class="navbar-link">Username</a>
+              </p>
               <ul class="nav">
-                <li class="active"><a href="/">RootHub</a></li>
-                <li><a href="/x">SubHub XYZ</a></li>
-                <li><a href="/a">SubHub ABC</a></li>
+                <li class="active"><a href="#">Root Hub</a></li>
+                <li><a href="#about">Sub Hub ABC</a></li>
+                <li><a href="#contact">Sub Hub XYZ</a></li>
               </ul>
-            </div>
+            </div><!--/.nav-collapse -->
           </div>
         </div>
       </div>
-      <div class="container">
-        <h1>Hello World!</h1>
-        <p>
-          Lorem {{.Get "Foo+Bar"}} Ipsum!
-        </p>
+
+      <div class="container-fluid">
+        <div class="row-fluid">
+          <div class="span3">
+            <div class="well sidebar-nav">
+              <ul class="nav nav-list">
+                <li class="nav-header">Sidebar</li>
+                <li class="active"><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li class="nav-header">Sidebar</li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li class="nav-header">Sidebar</li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+              </ul>
+            </div><!--/.well -->
+          </div><!--/span-->
+          <div class="span9">
+            <div class="hero-unit">
+              <h1>Hello, world!</h1>
+              <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+              <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+            </div>
+            <div class="row-fluid">
+              <div class="span4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn" href="#">View details &raquo;</a></p>
+              </div><!--/span-->
+              <div class="span4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn" href="#">View details &raquo;</a></p>
+              </div><!--/span-->
+              <div class="span4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn" href="#">View details &raquo;</a></p>
+              </div><!--/span-->
+            </div><!--/row-->
+            <div class="row-fluid">
+              <div class="span4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn" href="#">View details &raquo;</a></p>
+              </div><!--/span-->
+              <div class="span4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn" href="#">View details &raquo;</a></p>
+              </div>
+              <div class="span4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn" href="#">View details &raquo;</a></p>
+              </div><!--/span-->
+            </div><!--/row-->
+          </div><!--/span-->
+        </div><!--/row-->
+
       </div>
       <div id="ob_body_wrap_push"></div>
+
     </div>
     <div id="ob_footer">
       <div class="container">
-        <p>Footer</p>
+        <p>&copy;2013 You and the Gang</p>
       </div>
     </div>
+
     {{ range $lib := .WebUi.Libs }}
       {{ range $js := $lib.Js }}
         <script src="{{ $lib.Url $js "js" }}"></script>
       {{ end }}
     {{ end }}
+
   </body>
 </html>
