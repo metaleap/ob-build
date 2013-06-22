@@ -10,8 +10,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/go-utils/ufs"
 	"github.com/go-utils/ugo"
-	"github.com/go-utils/uio"
 )
 
 var (
@@ -34,7 +34,7 @@ func compilerRun(cmd string, args ...string) {
 func compileWebFiles() (err error) {
 	prepDirPath := ugo.GopathSrcGithub("openbase", "ob-build", "hive-prep")
 	prepTmpPath := filepath.Join(prepDirPath, "_tmp")
-	if err = uio.EnsureDirExists(prepTmpPath); err != nil {
+	if err = ufs.EnsureDirExists(prepTmpPath); err != nil {
 		return
 	}
 
@@ -51,7 +51,7 @@ func compileWebFiles() (err error) {
 	//	outFilePath may be "" as per getOutFilePath(), then returns false to skip processing
 	shouldPrep := func(srcFilePath, outFilePath string) (newer bool) {
 		if len(outFilePath) > 0 {
-			newer, _ = uio.IsNewerThan(srcFilePath, outFilePath)
+			newer, _ = ufs.IsNewerThan(srcFilePath, outFilePath)
 		}
 		return
 	}
@@ -71,7 +71,7 @@ func compileWebFiles() (err error) {
 		}
 	}
 
-	if errs := uio.WalkAllFiles(prepDirPath, func(filePath string) bool {
+	if errs := ufs.WalkAllFiles(prepDirPath, func(filePath string) bool {
 		if !strings.HasPrefix(filePath, prepTmpPath) {
 			wait.Add(1)
 			go prepFile(filePath)
@@ -87,13 +87,13 @@ func copyHive(dst string) {
 	defer wait.Done()
 	subDirs := []string{"dist", "cust"}
 	for _, subDir := range subDirs {
-		uio.EnsureDirExists(filepath.Join(dst, subDir))
+		ufs.EnsureDirExists(filepath.Join(dst, subDir))
 		if subDir == "dist" {
-			if err := uio.ClearDirectory(filepath.Join(dst, subDir)); err != nil {
+			if err := ufs.ClearDirectory(filepath.Join(dst, subDir)); err != nil {
 				panic(err)
 			}
 		}
-		if err := uio.CopyAll(filepath.Join(hiveDirPath, subDir), filepath.Join(dst, subDir), nil); err != nil {
+		if err := ufs.CopyAll(filepath.Join(hiveDirPath, subDir), filepath.Join(dst, subDir), nil); err != nil {
 			panic(err)
 		}
 	}
@@ -102,10 +102,10 @@ func copyHive(dst string) {
 func resetCust() {
 	distDirPath, custDirPath := filepath.Join(hiveDirPath, "dist"), filepath.Join(hiveDirPath, "cust")
 	//	clear everything in cust
-	uio.ClearDirectory(custDirPath)
+	ufs.ClearDirectory(custDirPath)
 	//	recreate entire dist directory hierarchy in cust, but empty (no files, only directories)
-	uio.WalkAllDirs(distDirPath, func(dirPath string) bool {
-		uio.EnsureDirExists(filepath.Join(custDirPath, dirPath[len(distDirPath):]))
+	ufs.WalkAllDirs(distDirPath, func(dirPath string) bool {
+		ufs.EnsureDirExists(filepath.Join(custDirPath, dirPath[len(distDirPath):]))
 		return true
 	})
 }
