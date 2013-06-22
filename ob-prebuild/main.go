@@ -10,8 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	ugo "github.com/metaleap/go-util"
-	uio "github.com/metaleap/go-util/io"
+	"github.com/go-utils/ugo"
+	"github.com/go-utils/uio"
 )
 
 var (
