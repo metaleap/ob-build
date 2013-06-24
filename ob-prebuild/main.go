@@ -81,11 +81,13 @@ func compileWebFiles() (err error) {
 	}); len(errs) > 0 {
 		err = errs[0]
 	}
+	wait.Wait()
 	return
 }
 
 func copyHive(dst string) {
 	defer wait.Done()
+	log.Printf("Copy hive to: %s", dst)
 	subDirs := []string{"dist", "cust"}
 	for _, subDir := range subDirs {
 		ufs.EnsureDirExists(filepath.Join(dst, subDir))
@@ -118,7 +120,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	wait.Wait()
 
 	//	copy to GAE demo-app/hive
 	wait.Add(1)
