@@ -7,7 +7,7 @@
     <meta name="description" content="Hub description">
     <meta name="author" content="Page author">
 
-    {{ range $lib := .WebUi.Libs }}
+    {{ range $lib := .Page.WebUI.Libs }}
       {{ range $css := $lib.Css }}
         <link href="{{ $lib.Url $css "css" }}" rel="stylesheet">
       {{ end }}
@@ -117,7 +117,7 @@
       </div>
     </div>
 
-    {{ range $lib := .WebUi.Libs }}
+    {{ range $lib := .Page.WebUI.Libs }}
       {{ range $js := $lib.Js }}
         <script src="{{ $lib.Url $js "js" }}"></script>
       {{ end }}
