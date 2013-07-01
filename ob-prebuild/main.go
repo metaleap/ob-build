@@ -7,7 +7,6 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 
@@ -114,7 +113,7 @@ func resetCust() {
 }
 
 func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
+	ugo.MaxProcs()
 	resetCust()
 	err := compileWebFiles()
 	if err != nil {
