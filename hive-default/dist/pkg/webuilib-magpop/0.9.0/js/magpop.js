@@ -1,4 +1,4 @@
-/*! Magnific Popup - v0.8.9 - 2013-06-04
+/*! Magnific Popup - v0.9.0 - 2013-07-03
 * http://dimsemenov.com/plugins/magnific-popup/
 * Copyright (c) 2013 Dmitry Semenov; */
 ;(function($) {
@@ -15,6 +15,7 @@
  * Private static constants
  */
 var CLOSE_EVENT = 'Close',
+	BEFORE_CLOSE_EVENT = 'BeforeClose',
 	AFTER_CLOSE_EVENT = 'AfterClose',
 	BEFORE_APPEND_EVENT = 'BeforeAppend',
 	MARKUP_PARSE_EVENT = 'MarkupParse',
@@ -76,7 +77,7 @@ var _mfpOn = function(name, f) {
 		}
 	},
 	_setFocus = function() {
-		(mfp.st.focus ? mfp.content.find(mfp.st.focus).eq(0) : mfp.wrap).focus();
+		(mfp.st.focus ? mfp.content.find(mfp.st.focus).eq(0) : mfp.wrap).trigger('focus');
 	},
 	_getCloseBtn = function(type) {
 		if(type !== _currPopupType || !mfp.currTemplate.closeBtn) {
@@ -208,7 +209,13 @@ MagnificPopup.prototype = {
 
 		mfp.st = $.extend(true, {}, $.magnificPopup.defaults, data ); 
 		mfp.fixedContentPos = mfp.st.fixedContentPos === 'auto' ? !mfp.probablyMobile : mfp.st.fixedContentPos;
-		
+
+		if(mfp.st.modal) {
+			mfp.st.closeOnContentClick = false;
+			mfp.st.closeOnBgClick = false;
+			mfp.st.showCloseBtn = false;
+			mfp.st.enableEscapeKey = false;
+		}
 		
 
 		// Building markup
@@ -245,14 +252,16 @@ MagnificPopup.prototype = {
 		_mfpTrigger('BeforeOpen');
 
 
-		// Close button
-		if(!mfp.st.closeBtnInside) {
-			mfp.wrap.append( _getCloseBtn() );
-		} else {
-			_mfpOn(MARKUP_PARSE_EVENT, function(e, template, values, item) {
-				values.close_replaceWith = _getCloseBtn(item.type);
-			});
-			_wrapClasses += ' mfp-close-btn-in';
+		if(mfp.st.showCloseBtn) {
+			// Close button
+			if(!mfp.st.closeBtnInside) {
+				mfp.wrap.append( _getCloseBtn() );
+			} else {
+				_mfpOn(MARKUP_PARSE_EVENT, function(e, template, values, item) {
+					values.close_replaceWith = _getCloseBtn(item.type);
+				});
+				_wrapClasses += ' mfp-close-btn-in';
+			}
 		}
 
 		if(mfp.st.alignTop) {
@@ -282,12 +291,14 @@ MagnificPopup.prototype = {
 
 		
 
-		// Close on ESC key
-		_document.on('keyup' + EVENT_NS, function(e) {
-			if(e.keyCode === 27) {
-				mfp.close();
-			}
-		});
+		if(mfp.st.enableEscapeKey) {
+			// Close on ESC key
+			_document.on('keyup' + EVENT_NS, function(e) {
+				if(e.keyCode === 27) {
+					mfp.close();
+				}
+			});
+		}
 
 		_window.on('resize' + EVENT_NS, function() {
 			mfp.updateSize();
@@ -384,6 +395,7 @@ MagnificPopup.prototype = {
 	 */
 	close: function() {
 		if(!mfp.isOpen) return;
+		_mfpTrigger(BEFORE_CLOSE_EVENT);
 
 		mfp.isOpen = false;
 		// for CSS3 animation
@@ -434,14 +446,15 @@ MagnificPopup.prototype = {
 		mfp.container.attr('class', 'mfp-container');
 
 		// remove close button from target element
-		if(!mfp.st.closeBtnInside || mfp.currTemplate[mfp.currItem.type] === true ) {
+		if(mfp.st.showCloseBtn &&
+		(!mfp.st.closeBtnInside || mfp.currTemplate[mfp.currItem.type] === true)) {
 			if(mfp.currTemplate.closeBtn)
 				mfp.currTemplate.closeBtn.detach();
 		}
 
 
 		if(mfp._lastFocusedEl) {
-			$(mfp._lastFocusedEl).focus(); // put tab focus back
+			$(mfp._lastFocusedEl).trigger('focus'); // put tab focus back
 		}
 		mfp.currItem = null;	
 		mfp.content = null;
@@ -539,7 +552,8 @@ MagnificPopup.prototype = {
 		mfp.content = newContent;
 		
 		if(newContent) {
-			if(mfp.st.closeBtnInside && mfp.currTemplate[type] === true) {
+			if(mfp.st.showCloseBtn && mfp.st.closeBtnInside &&
+				mfp.currTemplate[type] === true) {
 				// if there is no markup, we just append close button element inside
 				if(!mfp.content.find('.mfp-close').length) {
 					mfp.content.append(_getCloseBtn());
@@ -692,7 +706,7 @@ MagnificPopup.prototype = {
 
 			mfp.preloader.html(text);
 
-			mfp.preloader.find('a').click(function(e) {
+			mfp.preloader.find('a').on('click', function(e) {
 				e.stopImmediatePropagation();
 			});
 
@@ -825,6 +839,12 @@ $.magnificPopup = {
 		closeOnBgClick: true,
 
 		closeBtnInside: true, 
+
+		showCloseBtn: true,
+
+		enableEscapeKey: true,
+
+		modal: false,
 
 		alignTop: false,
 	
@@ -1222,6 +1242,8 @@ $.magnificPopup.registerModule('image', {
 
 							item.hasSize = true;
 							item.loaded = true;
+
+							_mfpTrigger('ImageLoadComplete');
 							
 						}
 						else {
